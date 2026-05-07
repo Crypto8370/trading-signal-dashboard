@@ -10,22 +10,22 @@
         .signal-card { background: #161a1e; border: 1px solid #2b2f36; }
     </style>
 </head>
-<body class="p-4 lg:p-8">
+<body class="p-4">
     <header class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-yellow-500">TRADING PRO SYSTEM</h1>
         <div id="clock" class="bg-gray-800 px-4 py-2 rounded border border-gray-600 text-xs font-mono">00:00:00</div>
     </header>
 
     <div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
-        <div class="xl:col-span-3 signal-card rounded-xl overflow-hidden shadow-2xl h-[550px]">
+        <div class="xl:col-span-3 signal-card rounded-xl overflow-hidden h-[500px]">
             <div id="tv-chart" class="w-full h-full"></div>
         </div>
 
         <div class="flex flex-col gap-6">
-            <div id="signal-box" class="signal-card p-6 rounded-xl text-center border-t-4 border-gray-500">
+            <div id="signal-box" class="signal-card p-6 rounded-xl text-center border-t-4 border-gray-500 shadow-xl">
                 <h2 class="text-gray-400 font-bold mb-2 text-sm uppercase">Current Signal</h2>
                 <div id="signal-text" class="text-5xl font-black my-4 text-gray-500 italic">SCANNING</div>
-                <div class="bg-black/30 p-2 rounded text-xs uppercase text-gray-500 font-bold">
+                <div class="bg-black/30 p-2 rounded text-xs uppercase text-gray-400 font-bold">
                     Confidence: <span id="conf-val" class="text-yellow-500">--</span>
                 </div>
             </div>
@@ -49,66 +49,53 @@
 
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
-        // 1. Inisialisasi Chart TradingView
         new TradingView.widget({
-            "autosize": true,
-            "symbol": "BINANCE:BTCUSDT",
-            "interval": "1",
-            "timezone": "Asia/Jakarta",
-            "theme": "dark",
-            "style": "1",
-            "locale": "id",
-            "toolbar_bg": "#f1f3f6",
-            "enable_publishing": false,
-            "hide_side_toolbar": false,
-            "allow_symbol_change": true,
-            "container_id": "tv-chart"
+            "autosize": true, "symbol": "BINANCE:BTCUSDT", "interval": "1",
+            "timezone": "Asia/Jakarta", "theme": "dark", "style": "1",
+            "locale": "id", "container_id": "tv-chart"
         });
 
-        // 2. Fungsi Jam
+        // Update Jam
         setInterval(() => {
             document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID');
         }, 1000);
 
-        // 3. LOGIC ENGINE (Real-time Binance API)
+        // Update Logika Sinyal
         async function updateSignal() {
             try {
-                const response = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT');
-                const data = await response.json();
-                
+                const res = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT');
+                const data = await res.json();
                 const change = parseFloat(data.priceChangePercent);
-                const price = parseFloat(data.lastPrice);
-                
+                const lastPrice = parseFloat(data.lastPrice);
+
                 const sText = document.getElementById('signal-text');
                 const sBox = document.getElementById('signal-box');
-                const cVal = document.getElementById('conf-val');
 
-                // Sensitivitas scalping M1 (0.02%)
-                if (change > 0.02) {
+                // Sinyal sangat sensitif untuk scalping (0.01%)
+                if (change > 0.01) {
                     sText.innerText = "BUY";
                     sText.className = "text-5xl font-black my-4 text-green-500 animate-pulse";
                     sBox.style.borderTopColor = "#22c55e";
-                    cVal.innerText = "89%";
-                } else if (change < -0.02) {
+                    document.getElementById('conf-val').innerText = "92%";
+                } else if (change < -0.01) {
                     sText.innerText = "SELL";
                     sText.className = "text-5xl font-black my-4 text-red-500 animate-pulse";
                     sBox.style.borderTopColor = "#ef4444";
-                    cVal.innerText = "86%";
+                    document.getElementById('conf-val').innerText = "88%";
                 } else {
-                    sText.innerText = "STABLE";
-                    sText.className = "text-5xl font-black my-4 text-gray-400";
+                    sText.innerText = "NEUTRAL";
+                    sText.className = "text-5xl font-black my-4 text-gray-500";
                     sBox.style.borderTopColor = "#6b7280";
-                    cVal.innerText = "WAIT";
+                    document.getElementById('conf-val').innerText = "WAIT";
                 }
 
-                document.getElementById('entry-price').innerText = price.toFixed(2);
-                document.getElementById('tp-price').innerText = (price * 1.0015).toFixed(2);
-                document.getElementById('sl-price').innerText = (price * 0.9990).toFixed(2);
-
-            } catch (err) { console.error("API Error"); }
+                document.getElementById('entry-price').innerText = lastPrice.toFixed(2);
+                document.getElementById('tp-price').innerText = (lastPrice * 1.001).toFixed(2);
+                document.getElementById('sl-price').innerText = (lastPrice * 0.999).toFixed(2);
+            } catch (e) { console.error("Data Error"); }
         }
 
-        setInterval(updateSignal, 3000); // Update setiap 3 detik
+        setInterval(updateSignal, 3000);
         updateSignal();
     </script>
 </body>
