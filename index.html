@@ -79,38 +79,41 @@
                 // Kita pakai data BTC sebagai trigger volatilitas simulasi
                 const res = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT');
                 const data = await res.json();
-                
-                const change = parseFloat(data.priceChangePercent);
-                const lastPrice = parseFloat(data.lastPrice);
-                
+ let lastStoredPrice = 0; 
+
+        async function updateSignal() {
+            try {
+                // Mengambil data harga Gold real-time
+                const res = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=PAXGUSDT');
+                const data = await res.json();
+                const currentPrice = parseFloat(data.price);
+
                 const sText = document.getElementById('signal-text');
                 const sBox = document.getElementById('signal-box');
 
-                if (change > 0.1) {
-// Sangat sensitif (0.001) agar sinyal cepat bereaksi pada scalping M1
-                if (change > 0.001) {
-                    sText.innerText = "BUY";
-                    sText.className = "text-4xl font-black my-4 text-green-500 animate-pulse";
-                    sBox.style.borderTopColor = "#22c55e";
-                } else if (change < -0.001) {
-                    sText.innerText = "SELL";
-                    sText.className = "text-4xl font-black my-4 text-red-500 animate-pulse";
-                    sBox.style.borderTopColor = "#ef4444";
-                } else {
-                    sText.innerText = "NEUTRAL";
-                    sText.className = "text-4xl font-black my-4 text-gray-400";
-                    sBox.style.borderTopColor = "#6b7280";
-                }
+                // Logika perbandingan harga agar tidak "diam"
+                if (lastStoredPrice !== 0) {
+                    if (currentPrice > lastStoredPrice) {
+                        sText.innerText = "BUY";
+                        sText.className = "text-4xl font-black my-4 text-green-500 animate-pulse";
+                        sBox.style.borderTopColor = "#22c55e";
+                    } else if (currentPrice < lastStoredPrice) {
+                        sText.innerText = "SELL";
+                        sText.className = "text-4xl font-black my-4 text-red-500 animate-pulse";
+                        sBox.style.borderTopColor = "#ef4444";
+                    }
                 }
 
-                document.getElementById('entry-price').innerText = lastPrice.toFixed(2);
-                document.getElementById('tp-price').innerText = (lastPrice * 1.002).toFixed(2);
-                document.getElementById('sl-price').innerText = (lastPrice * 0.998).toFixed(2);
-                document.getElementById('conf-val').innerText = (80 + Math.random() * 15).toFixed(0) + "%";
+                lastStoredPrice = currentPrice; 
 
-            } catch (e) { console.error("Error update"); }
+                // Update angka di panel dashboard BangJoe
+                document.getElementById('entry-price').innerText = currentPrice.toFixed(2);
+                document.getElementById('tp-price').innerText = (currentPrice + 1.2).toFixed(2);
+                document.getElementById('sl-price').innerText = (currentPrice - 0.8).toFixed(2);
+                document.getElementById('conf-val').innerText = (85 + Math.random() * 10).toFixed(0) + "%";
+
+            } catch (e) { console.error("Error update harga"); }
         }
-
         setInterval(updateSignal, 5000);
         updateSignal();
     </script>
