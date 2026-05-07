@@ -128,10 +128,10 @@
                     confVal.innerText = "Scanning...";
                 }
 
+                // Update Angka di Panel (Gunakan 'Id' dengan I kapital)
                 document.getElementById('entry-price').innerText = lastPrice;
-                document.getElementById('tp-price').innerText = (lastPrice * 1.01).toFixed(2); // Profit 1%
-                document.getElementById('sl-price').innerText = (lastPrice * 0.995).toFixed(2); // Loss 0.5%
-
+                document.getElementById('tp-price').innerText = (lastPrice * 1.01).toFixed(2);
+                document.getElementById('sl-price').innerText = (lastPrice * 0.995).toFixed(2);
             } catch (error) {
                 console.log("Error fetching data");
             }
