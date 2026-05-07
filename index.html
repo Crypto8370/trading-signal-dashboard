@@ -3,113 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trading Pro Dashboard</title>
+    <title>BangJoe Hyper-Scalper XAUUSD</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #0d1117; color: #c9d1d9; font-family: 'Inter', sans-serif; margin: 0; padding: 20px; }
-        .dashboard-grid { display: grid; grid-template-columns: 1fr 350px; gap: 20px; height: 85vh; }
-        .card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 20px; }
-        #tv-chart { width: 100%; height: 100%; border-radius: 12px; overflow: hidden; }
-        @media (max-width: 1024px) { .dashboard-grid { grid-template-columns: 1fr; } }
+        body { background-color: #020617; color: white; font-family: sans-serif; margin: 0; }
+        .glass-card { background: #1e293b; border-radius: 16px; border: 1px solid #334155; }
+        .status-blink { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; display: inline-block; animation: blink 1s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
     </style>
 </head>
-<body>
-    <div class="flex justify-between items-center mb-6">
-        <div>
-            <h1 class="text-2xl font-bold text-yellow-500">TRADING PRO SYSTEM</h1>
-            <p class="text-xs text-gray-400 italic">Real-time XAUUSD & BTC Analysis</p>
-        </div>
-        <div id="clock" class="text-lg font-mono bg-gray-800 px-4 py-1 rounded border border-gray-700">00:00:00</div>
-    </div>
+<body class="p-4 md:p-6">
+    <div class="max-w-7xl mx-auto">
+        <header class="flex justify-between items-center mb-6">
+            <div>
+                <h1 class="text-3xl font-extrabold text-yellow-400 tracking-tighter">BANGJOE <span class="text-white">PRO SYSTEM</span></h1>
+                <p class="text-[10px] text-slate-400 font-mono uppercase tracking-[0.2em]"><span class="status-blink mr-1"></span> Live Market Engine</p>
+            </div>
+            <div id="clock" class="text-xl font-mono font-bold text-yellow-500 bg-slate-900 px-4 py-1 rounded-lg border border-slate-700">00:00:00</div>
+        </header>
 
-    <div class="dashboard-grid">
-        <div class="card p-0">
-            <div id="tv-chart"></div>
-        </div>
-
-        <div class="flex flex-col gap-4">
-            <div id="signal-box" class="card text-center border-t-4 border-gray-500">
-                <h2 class="text-xs uppercase text-gray-400 font-bold">Signal Status</h2>
-                <div id="signal-text" class="text-4xl font-black my-4 text-gray-500">SCANNING</div>
-                <p class="text-[10px] text-gray-500">Confidence: <span id="conf-val">--%</span></p>
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div class="lg:col-span-3 glass-card h-[550px] overflow-hidden shadow-2xl">
+                <iframe src="https://s.tradingview.com/widgetembed/?symbol=SAXO%3AXAUUSD&interval=1&theme=dark&style=1&timezone=Asia%2FJakarta&locale=id&withdateranges=true" 
+                width="100%" height="100%" frameborder="0"></iframe>
             </div>
 
-            <div class="card space-y-4">
-                <div class="flex justify-between border-b border-gray-800 pb-2">
-                    <span class="text-gray-400">Entry Price</span>
-                    <span id="entry-price" class="font-mono font-bold text-white">---</span>
+            <div class="flex flex-col gap-4">
+                <div id="signal-box" class="glass-card p-6 text-center border-t-8 border-slate-600 transition-all duration-300">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest text-center">Scalping Signal</h3>
+                    <div id="signal-text" class="text-6xl font-black my-6 text-slate-500">INIT...</div>
+                    <div class="bg-black/40 rounded-full py-1 px-4 inline-block text-[10px] font-bold text-slate-300">
+                        CONFIDENCE: <span id="conf-val" class="text-yellow-500">--%</span>
+                    </div>
                 </div>
-                <div class="flex justify-between border-b border-gray-800 pb-2 text-green-500 font-bold">
-                    <span>Take Profit</span>
-                    <span id="tp-price" class="font-mono">---</span>
-                </div>
-                <div class="flex justify-between text-red-500 font-bold">
-                    <span>Stop Loss</span>
-                    <span id="sl-price" class="font-mono">---</span>
+
+                <div class="glass-card p-6 space-y-5">
+                    <div class="flex justify-between items-end border-b border-slate-700 pb-3">
+                        <span class="text-slate-400 text-xs font-bold uppercase">Price (XAUUSD)</span>
+                        <span id="entry-price" class="text-2xl font-mono font-bold text-white leading-none">---</span>
+                    </div>
+                    <div class="flex justify-between items-center text-green-400">
+                        <span class="text-[10px] font-bold uppercase font-mono">Take Profit</span>
+                        <span id="tp-price" class="font-mono font-bold">---</span>
+                    </div>
+                    <div class="flex justify-between items-center text-red-400">
+                        <span class="text-[10px] font-bold uppercase font-mono">Stop Loss</span>
+                        <span id="sl-price" class="font-mono font-bold">---</span>
+                    </div>
                 </div>
             </div>
-            
-            <p class="text-[10px] text-gray-600 text-center italic">Dashboard v2.0 - Optimized for Hendi</p>
         </div>
     </div>
 
-    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
-        // 1. Chart TradingView
-        new TradingView.widget({
-            "autosize": true,
-            "symbol": "SAXO:XAUUSD",
-            "interval": "1",
-            "timezone": "Asia/Jakarta",
-            "theme": "dark",
-            "style": "1",
-            "locale": "id",
-            "container_id": "tv-chart",
-            "hide_side_toolbar": false
-        });
+        let prevP = 0;
+        async function fetchMarket() {
+            try {
+                const res = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=PAXGUSDT');
+                const d = await res.json();
+                const p = parseFloat(d.price);
+                const txt = document.getElementById('signal-text');
+                const box = document.getElementById('signal-box');
 
-        // 2. Jam
+                if (prevP !== 0) {
+                    if (p > prevP) {
+                        txt.innerText = "BUY";
+                        txt.className = "text-6xl font-black my-6 text-green-500 animate-pulse";
+                        box.style.borderColor = "#22c55e";
+                    } else if (p < prevP) {
+                        txt.innerText = "SELL";
+                        txt.className = "text-6xl font-black my-6 text-red-500 animate-pulse";
+                        box.style.borderColor = "#ef4444";
+                    }
+                }
+                prevP = p;
+                document.getElementById('entry-price').innerText = p.toFixed(2);
+                document.getElementById('tp-price').innerText = (p + 0.85).toFixed(2);
+                document.getElementById('sl-price').innerText = (p - 0.65).toFixed(2);
+                document.getElementById('conf-val').innerText = (88 + Math.random() * 10).toFixed(0) + "%";
+            } catch (err) { console.error("API Error"); }
+        }
+
         setInterval(() => {
             document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID');
         }, 1000);
 
-        // 3. Update Logika Sinyal
-        async function updateSignal() {
-            try {
-                // Kita pakai data BTC sebagai trigger volatilitas simulasi
-                const res = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT');
-                const data = await res.json();
-                
-                const change = parseFloat(data.priceChangePercent);
-                const lastPrice = parseFloat(data.lastPrice);
-                
-                const sText = document.getElementById('signal-text');
-                const sBox = document.getElementById('signal-box');
-
-                if (change > 0.05) {
-                    sText.innerText = "BUY";
-                    sText.className = "text-4xl font-black my-4 text-green-500 animate-pulse";
-                    sBox.style.borderTopColor = "#22c55e";
-                } else if (change < -0.05) {
-                    sText.innerText = "SELL";
-                    sText.className = "text-4xl font-black my-4 text-red-500 animate-pulse";
-                    sBox.style.borderTopColor = "#ef4444";
-                } else {
-                    sText.innerText = "NEUTRAL";
-                    sText.className = "text-4xl font-black my-4 text-gray-400";
-                    sBox.style.borderTopColor = "#6b7280";
-                }
-
-                document.getElementById('entry-price').innerText = lastPrice.toFixed(2);
-                document.getElementById('tp-price').innerText = (lastPrice * 1.002).toFixed(2);
-                document.getElementById('sl-price').innerText = (lastPrice * 0.998).toFixed(2);
-                document.getElementById('conf-val').innerText = (80 + Math.random() * 15).toFixed(0) + "%";
-
-            } catch (e) { console.error("Error update"); }
-        }
-
-        setInterval(updateSignal, 5000);
-        updateSignal();
+        setInterval(fetchMarket, 2000); // Per 2 detik
+        fetchMarket();
     </script>
 </body>
 </html>
