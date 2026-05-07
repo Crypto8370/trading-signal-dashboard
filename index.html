@@ -111,7 +111,7 @@
                 // Jika harga naik > 0.5% dalam 24 jam = Potensi BUY
                 // Jika harga turun < -0.5% dalam 24 jam = Potensi SELL
                 
-                if (priceChange > 0.5) {
+                if (priceChange > 0.1) {
                     signalText.innerText = "BUY";
                     signalText.className = "text-5xl font-black my-4 text-green-500 animate-pulse";
                     signalBox.style.borderTopColor = "#22c55e";
