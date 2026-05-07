@@ -3,104 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BangJoe Trading System</title>
+    <title>BangJoe Pro Trading</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #0f172a; color: white; font-family: sans-serif; }
-        .dashboard-card { background: #1e293b; border-radius: 12px; padding: 20px; border-top: 4px solid #facc15; }
-        .pulse { animation: pulse 2s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        body { background-color: #0f172a; color: white; font-family: sans-serif; margin: 0; }
+        .card-pro { background: #1e293b; border-radius: 12px; border: 1px solid #334155; }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body class="p-4">
     <div class="max-w-6xl mx-auto">
-        <header class="flex justify-between items-center mb-8">
-            <div>
-                <h1 class="text-3xl font-bold text-yellow-400">BANGJOE PRO SYSTEM</h1>
-                <p class="text-gray-400">Real-time Scalping Analysis</p>
-            </div>
-            <div class="bg-gray-800 px-4 py-2 rounded-lg border border-gray-700">
-                <span class="text-xs text-gray-500 block">LOCAL TIME</span>
-                <span id="clock" class="font-mono font-bold text-xl text-yellow-400">00:00:00</span>
-            </div>
+        <header class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-yellow-400">BANGJOE PRO SYSTEM</h1>
+            <div id="clock" class="font-mono bg-slate-800 px-3 py-1 rounded border border-slate-700 text-yellow-400">00:00:00</div>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="lg:col-span-2 bg-gray-900 rounded-xl overflow-hidden shadow-2xl h-[500px]">
-                <iframe src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_76292&symbol=SAXO%3AXAUUSD&interval=1&hidesidetoolbar=0&symboledit=1&saveimage=1&toolbarbg=f1f3f6&studies=%5B%5D&theme=dark&style=1&timezone=Asia%2FJakarta&studies_overrides=%7B%7D&overrides=%7B%7D&enabled_features=%5B%5D&disabled_features=%5B%5D&locale=id" 
-                width="100%" height="100%" frameborder="0" allowtransparency="true" scrolling="no" allowfullscreen></iframe>
+            <div class="lg:col-span-2 card-pro h-[500px] overflow-hidden shadow-2xl">
+                <iframe src="https://s.tradingview.com/widgetembed/?symbol=SAXO%3AXAUUSD&interval=1&theme=dark&style=1&timezone=Asia%2FJakarta&locale=id" 
+                width="100%" height="100%" frameborder="0"></iframe>
             </div>
 
-            <div class="space-y-6">
-                <div id="signal-box" class="dashboard-card text-center">
-                    <h3 class="text-gray-400 font-bold uppercase text-xs tracking-widest">SIGNAL STATUS</h3>
-                    <div id="signal-text" class="text-4xl font-black my-4 text-gray-500">SCANNING</div>
-                    <div class="text-xs text-gray-500">Confidence: <span id="conf-val">--%</span></div>
+            <div class="space-y-4">
+                <div id="signal-box" class="card-pro p-6 text-center border-t-4 border-slate-500">
+                    <p class="text-xs text-slate-400 uppercase font-bold">Signal Status</p>
+                    <div id="signal-text" class="text-4xl font-black my-4 text-slate-500">OFFLINE</div>
+                    <p class="text-[10px] text-slate-500 italic">Confidence: <span id="conf-val">--%</span></p>
                 </div>
 
-                <div class="bg-gray-800 p-6 rounded-xl space-y-4 border border-gray-700">
-                    <div class="flex justify-between border-b border-gray-700 pb-2">
-                        <span class="text-gray-400">Entry Price</span>
+                <div class="card-pro p-6 space-y-4">
+                    <div class="flex justify-between border-b border-slate-700 pb-2">
+                        <span class="text-slate-400 font-semibold text-sm">Entry (XAUUSD)</span>
                         <span id="entry-price" class="font-mono font-bold text-white">---</span>
                     </div>
-                    <div class="flex justify-between border-b border-gray-700 pb-2">
-                        <span class="text-green-400 font-semibold">Take Profit</span>
+                    <div class="flex justify-between border-b border-slate-700 pb-2">
+                        <span class="text-green-500 font-semibold text-sm">Take Profit</span>
                         <span id="tp-price" class="font-mono font-bold text-green-400">---</span>
                     </div>
                     <div class="flex justify-between">
-                        <span class="text-red-400 font-semibold">Stop Loss</span>
+                        <span class="text-red-500 font-semibold text-sm">Stop Loss</span>
                         <span id="sl-price" class="font-mono font-bold text-red-400">---</span>
                     </div>
                 </div>
-                
-                <p class="text-[10px] text-gray-600 text-right italic font-mono">Dashboard v3.0 - Optimized for BangJoe</p>
+                <p class="text-[10px] text-slate-600 text-right italic font-mono">v3.1 Stable - For BangJoe</p>
             </div>
         </div>
     </div>
 
     <script>
-        let lastPrice = 0;
+        let lastP = 0;
 
-        async function updateSignal() {
+        async function getS() {
             try {
-                // Ambil harga Gold (PAXG) dari Binance
-                const res = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=PAXGUSDT');
-                const data = await res.json();
-                const currentPrice = parseFloat(data.price);
+                const r = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=PAXGUSDT');
+                const d = await r.json();
+                const p = parseFloat(d.price);
 
-                const sText = document.getElementById('signal-text');
-                const sBox = document.getElementById('signal-box');
+                const txt = document.getElementById('signal-text');
+                const box = document.getElementById('signal-box');
 
-                if (lastPrice !== 0) {
-                    if (currentPrice > lastPrice) {
-                        sText.innerText = "BUY";
-                        sText.className = "text-4xl font-black my-4 text-green-500 animate-pulse";
-                        sBox.style.borderTopColor = "#22c55e";
-                    } else if (currentPrice < lastPrice) {
-                        sText.innerText = "SELL";
-                        sText.className = "text-4xl font-black my-4 text-red-500 animate-pulse";
-                        sBox.style.borderTopColor = "#ef4444";
+                if (lastP !== 0) {
+                    if (p > lastP) {
+                        txt.innerText = "BUY";
+                        txt.className = "text-4xl font-black my-4 text-green-500 animate-pulse";
+                        box.style.borderColor = "#22c55e";
+                    } else if (p < lastP) {
+                        txt.innerText = "SELL";
+                        txt.className = "text-4xl font-black my-4 text-red-500 animate-pulse";
+                        box.style.borderColor = "#ef4444";
                     }
                 }
-
-                lastPrice = currentPrice;
-
-                // Update Angka
-                document.getElementById('entry-price').innerText = currentPrice.toFixed(2);
-                document.getElementById('tp-price').innerText = (currentPrice + 1.5).toFixed(2);
-                document.getElementById('sl-price').innerText = (currentPrice - 1.0).toFixed(2);
+                lastP = p;
+                document.getElementById('entry-price').innerText = p.toFixed(2);
+                document.getElementById('tp-price').innerText = (p + 1.5).toFixed(2);
+                document.getElementById('sl-price').innerText = (p - 1.0).toFixed(2);
                 document.getElementById('conf-val').innerText = (85 + Math.random() * 10).toFixed(0) + "%";
-
-            } catch (e) { console.log("Reconnecting..."); }
+            } catch (e) { console.log("error"); }
         }
 
-        // Jam & Interval
         setInterval(() => {
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-GB');
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID');
         }, 1000);
 
-        setInterval(updateSignal, 3000); // Update tiap 3 detik
-        updateSignal();
+        setInterval(getS, 3000);
+        getS();
     </script>
 </body>
 </html>
