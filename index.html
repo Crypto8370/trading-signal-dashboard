@@ -86,11 +86,11 @@
                 const sText = document.getElementById('signal-text');
                 const sBox = document.getElementById('signal-box');
 
-                if (change > 0.05) {
+                if (change > 0.1) {
                     sText.innerText = "BUY";
                     sText.className = "text-4xl font-black my-4 text-green-500 animate-pulse";
                     sBox.style.borderTopColor = "#22c55e";
-                } else if (change < -0.05) {
+                } else if (change < -0.1) {
                     sText.innerText = "SELL";
                     sText.className = "text-4xl font-black my-4 text-red-500 animate-pulse";
                     sBox.style.borderTopColor = "#ef4444";
