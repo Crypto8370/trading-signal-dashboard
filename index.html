@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Signal Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0b0e11; color: white; font-family: 'Inter', sans-serif; }
+        .tradingview-widget-container { height: 550px !important; }
+        .signal-card { background: #161a1e; border: 1px solid #2b2f36; }
+    </style>
+</head>
+<body class="p-4 lg:p-8">
+    <header class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-yellow-500">TRADING PRO SYSTEM</h1>
+            <p class="text-gray-400 text-sm">Real-time Analysis Dashboard</p>
+        </div>
+        <div class="flex gap-4">
+            <div class="bg-gray-800 px-4 py-2 rounded border border-gray-600 text-xs">
+                <span class="text-gray-400">STATUS:</span> <span class="text-green-500 font-bold">ONLINE</span>
+            </div>
+            <div id="clock" class="bg-gray-800 px-4 py-2 rounded border border-gray-600 text-xs font-mono">
+                00:00:00
+            </div>
+        </div>
+    </header>
+
+    <div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
+        
+        <div class="xl:col-span-3 signal-card rounded-xl overflow-hidden shadow-2xl">
+            <div id="tv-chart" class="w-full h-full">
+                </div>
+        </div>
+
+        <div class="flex flex-col gap-6">
+            <div id="signal-box" class="signal-card p-6 rounded-xl text-center shadow-lg border-t-4 border-yellow-500">
+                <h2 class="text-gray-400 font-bold mb-2">CURRENT SIGNAL</h2>
+                <div id="signal-text" class="text-5xl font-black my-4 text-gray-500 italic">SCANNING</div>
+                <div class="grid grid-cols-2 gap-2 text-sm mt-4">
+                    <div class="bg-black/30 p-2 rounded">
+                        <p class="text-gray-500 text-xs">Confidence</p>
+                        <p id="conf-val" class="font-bold">--%</p>
+                    </div>
+                    <div class="bg-black/30 p-2 rounded">
+                        <p class="text-gray-500 text-xs">Risk/Reward</p>
+                        <p class="font-bold text-blue-400">1:2</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="signal-card p-6 rounded-xl space-y-4 shadow-lg">
+                <div class="flex justify-between border-b border-gray-700 pb-2">
+                    <span class="text-gray-400">Entry</span>
+                    <span id="entry-price" class="font-mono font-bold">---</span>
+                </div>
+                <div class="flex justify-between border-b border-gray-700 pb-2">
+                    <span class="text-gray-400 text-green-400">Take Profit</span>
+                    <span id="tp-price" class="font-mono font-bold text-green-400">---</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-400 text-red-400">Stop Loss</span>
+                    <span id="sl-price" class="font-mono font-bold text-red-400">---</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script>
+        // 1. Inisialisasi Chart
+        new TradingView.widget({
+            "autosize": true,
+            "symbol": "BINANCE:BTCUSDT",
+            "interval": "5",
+            "timezone": "Asia/Jakarta",
+            "theme": "dark",
+            "style": "1",
+            "locale": "id",
+            "container_id": "tv-chart",
+            "hide_side_toolbar": false,
+            "allow_symbol_change": true,
+            "save_image": false,
+            "details": true,
+            "hotlist": true,
+            "calendar": true
+        });
+
+        // 2. Fungsi Jam Real-time
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID');
+        }
+        setInterval(updateClock, 1000);
+
+        // 3. Simulasi Logika Sinyal (Akan kita hubungkan ke data asli nanti)
+        function updateSignal() {
+            // Ini adalah area di mana nantinya data dari Google Sheets/Pine Script akan masuk
+            // Untuk sementara, kita beri placeholder visual
+            document.getElementById('entry-price').innerText = "LIVE";
+        }
+        updateSignal();
+    </script>
+</body>
+</html>
